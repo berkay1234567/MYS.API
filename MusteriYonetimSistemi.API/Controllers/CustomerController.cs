@@ -91,6 +91,7 @@ namespace MusteriYonetimSistemi.API.Controllers
             {
                 Log.Information("Update Customer => {ex}", ex);
                 return StatusCode(500, ex.Message);
+
             }
         }
 
