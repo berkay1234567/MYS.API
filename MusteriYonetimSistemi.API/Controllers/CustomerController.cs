@@ -48,7 +48,7 @@ namespace MusteriYonetimSistemi.API.Controllers
             }
             catch (Exception ex)
             {
-                Log.Information("Get All Customers => {ex}", ex);
+                Log.Information("Get Customer By ID => {ex}", ex);
 
                 //log error
                 return StatusCode(500, ex.Message);
@@ -64,7 +64,7 @@ namespace MusteriYonetimSistemi.API.Controllers
             }
             catch (Exception ex)
             {
-                //log error
+                Log.Information("Create Customer => {ex}", ex);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -78,13 +78,18 @@ namespace MusteriYonetimSistemi.API.Controllers
             {
                 var cus = await _customerRepository.FindAsync(id);
                 if (cus == null ||( id != customer.CustomerID))
+                {
+                    Log.Information("Create Customers => customer not found id:{id}", id);
+
                     return NotFound();
+
+                }
                 await _customerRepository.UpdateAsync(customer);
                 return Ok();
             }
             catch (Exception ex)
             {
-                //log error
+                Log.Information("Update Customer => {ex}", ex);
                 return StatusCode(500, ex.Message);
             }
         }
@@ -96,13 +101,18 @@ namespace MusteriYonetimSistemi.API.Controllers
             {
                 var customer = await _customerRepository.FindAsync(id);
                 if (customer == null)
+                {
+                    Log.Information("Delete Customers => customer not found id:{id}", id);
                     return NotFound();
+
+                }
                 var cust = await _customerRepository.DeleteAsync(id);
                 return Ok(cust);
             }
             catch (Exception ex)
             {
-                //log error
+                Log.Information("Delete Customer => {ex}", ex);
+
                 return StatusCode(500, ex.Message);
             }
         }

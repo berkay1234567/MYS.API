@@ -1,6 +1,7 @@
 ﻿using Dapper.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 
 namespace MusteriYonetimSistemi.API.Controllers
@@ -25,6 +26,8 @@ namespace MusteriYonetimSistemi.API.Controllers
             }
             catch (Exception ex)
             {
+                Log.Information("Get All orders => {ex}", ex);
+
                 return StatusCode(500, ex.Message);
             }
         }
@@ -36,12 +39,18 @@ namespace MusteriYonetimSistemi.API.Controllers
             {
                 var customer = await _orderRepository.FindAsync(id);
                 if (customer == null)
+                {
+                    Log.Information("Get Customer order by id => customer not found id:{id}", id);
                     return NotFound();
+
+                }
                 var orders = await _orderRepository.GetByCustomerIdAsync(id);
                 return Ok(orders);
             }
             catch (Exception ex)
             {
+                Log.Information("Get orders by customer ıd => {ex}", ex);
+
                 return StatusCode(500, ex.Message);
             }
         }

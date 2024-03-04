@@ -1,5 +1,7 @@
 ﻿using Dapper.Application.Interfaces;
 using Dapper.Core.Entities.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Serilog;
 
 
 
@@ -33,7 +35,10 @@ namespace Dapper.Infrastructure.Repository
                 });
                 return true;
             }
-            catch (Exception ex) { return false; }
+            catch (Exception ex) {
+                Log.Information("sp_create_customer => {ex}", ex);
+
+                return false; }
         }
 
         public async Task<bool> UpdateAsync(Customer customer)
@@ -43,7 +48,12 @@ namespace Dapper.Infrastructure.Repository
                 await _db.SaveData("sp_update_customer", customer);
                 return true;
             }
-            catch (Exception ex) { return false; }
+            catch (Exception ex) 
+            {
+                Log.Information("sp_update_customer => {ex}", ex);
+
+                return false; 
+            }
         }
 
         public  async Task<bool> DeleteAsync(int id)
@@ -53,30 +63,57 @@ namespace Dapper.Infrastructure.Repository
                 await _db.SaveData("sp_delete_customer", new { id = id });
                 return true;
             }
-            catch (Exception ex) { return false; }
+            catch (Exception ex) {
+                Log.Information("sp_delete_customer => {ex}", ex);
+
+                return false; }
         }
 
         public  async Task<Customer> GetByIdAsync(int id)
         {
-
-            IEnumerable<Customer> result = await _db.GetData<Customer, dynamic>("sp_get_customer", new { id = id });
-            return result.FirstOrDefault();
+            try
+            {
+                IEnumerable<Customer> result = await _db.GetData<Customer, dynamic>("sp_get_customer", new { id = id });
+                return result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Log.Information("sp_get_customer => {ex}", ex);
+                return null;
+            }
+            
 
         }
 
         public async Task<IEnumerable<Customer>> GetByAllAsync()
         {
+            try
+            {
+                string query = "sp_get_all_customers";
+                return await _db.GetData<Customer, dynamic>(query, new { });
+            }
+            catch (Exception ex)
+            {
+                Log.Information("sp_get_all_customer => {ex}", ex);
+                return null;
+            }
 
-            string query = "sp_get_all_customers";
-            return await _db.GetData<Customer, dynamic>(query, new { });
 
         }
 
         public  async Task<Customer> FindAsync(int id)
         {
+            try
+            {
+                IEnumerable<Customer> result = await _db.GetData<Customer, dynamic>("sp_get_customer", new { id = id });
+                return result.FirstOrDefault();
+            }
+            catch(Exception ex)
+            {
+                Log.Information("sp_get_customer => {ex}", ex);
+                return null;
+            }
 
-            IEnumerable<Customer> result = await _db.GetData<Customer, dynamic>("sp_get_customer", new { id = id });
-            return result.FirstOrDefault();
 
         }
 
